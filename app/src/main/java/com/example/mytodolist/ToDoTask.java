@@ -3,8 +3,8 @@ package com.example.mytodolist;
 import java.util.Calendar;
 
 public class ToDoTask {
-    String title;
-    String details;
+    CharSequence title;
+    CharSequence details;
     boolean isDone;
     Calendar deadline;
 
@@ -12,7 +12,7 @@ public class ToDoTask {
         this.title = title;
     }
 
-    public String getTitle() {
+    public CharSequence getTitle() {
         return title;
     }
 
@@ -20,7 +20,7 @@ public class ToDoTask {
         this.title = title;
     }
 
-    public String getDetails() {
+    public CharSequence getDetails() {
         return details;
     }
 

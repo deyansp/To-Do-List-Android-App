@@ -17,10 +17,19 @@ import java.util.ArrayList;
 public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHolder>{
     ArrayList<ToDoTask> tasks;
     Context context;
+    OnItemClickListener mListener;
 
     public ToDoListAdapter(ArrayList<ToDoTask> tasks, Context context) {
         this.tasks = tasks;
         this.context = context;
+    }
+
+    public interface OnItemClickListener {
+        void OnItemClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
     }
 
     @NonNull
@@ -54,6 +63,19 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHo
             mainText = itemView.findViewById(R.id.mainText);
             optionsButton = itemView.findViewById(R.id.optionsButton);
             layout = itemView.findViewById(R.id.mainLayout);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mListener != null) {
+                        int position = getAdapterPosition();
+                        // making sure the item still exists
+                        if (position != RecyclerView.NO_POSITION) {
+                            mListener.OnItemClick(position);
+                        }
+                    }
+                }
+            });
         }
     }
 }
