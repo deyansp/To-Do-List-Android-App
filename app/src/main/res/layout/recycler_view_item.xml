@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:padding="12dp"
+              android:id="@+id/toDoListLayout"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+  <CheckBox
+      android:layout_width="40dp"
+      android:layout_height="40dp"
+      android:id="@+id/checkbox" />
+  <TextView
+      android:id="@+id/mainText"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@+id/checkbox"
+      android:layout_toLeftOf="@+id/optionsButton"
+      android:layout_centerVertical="true"
+      android:textColor="#000"
+      android:layout_marginLeft="10dp"
+      tools:text="@tools:sample/lorem" />
+  <ImageButton
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:id="@+id/optionsButton"
+      android:layout_centerVertical="true"
+      android:layout_alignParentRight="true"
+      />
+
+</RelativeLayout>
