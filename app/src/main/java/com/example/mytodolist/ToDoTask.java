@@ -12,6 +12,11 @@ public class ToDoTask {
         this.title = title;
     }
 
+    public ToDoTask(CharSequence title, CharSequence details) {
+        this.title = title;
+        this.details = details;
+    }
+
     public CharSequence getTitle() {
         return title;
     }

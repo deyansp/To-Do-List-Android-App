@@ -31,13 +31,16 @@
       android:textColor="#000"
       android:layout_marginLeft="10dp"
       tools:text="@tools:sample/lorem" />
-  <ImageButton
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:id="@+id/optionsButton"
-      android:layout_centerVertical="true"
-      android:layout_alignParentRight="true"
-      />
+
+    <ImageButton
+        android:id="@+id/optionsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:backgroundTint="#00FAFAFA"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_task_options" />
 
 </RelativeLayout>
     </androidx.cardview.widget.CardView>

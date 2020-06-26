@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initTasks(){
-        ToDoTask task1 = new ToDoTask("Call grandma");
+        ToDoTask task1 = new ToDoTask("Call grandma", "On Viber this Tuesday.");
         tasks.add(task1);
         ToDoTask task2 = new ToDoTask("Do the laundry");
         tasks.add(task2);
@@ -46,6 +46,12 @@ public class MainActivity extends AppCompatActivity {
             public void OnItemClick(int position) {
                 CharSequence text = tasks.get(position).title;
                 Toast.makeText(getApplicationContext(), text + " Clicked", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void OnOptionsClick(int position) {
+                CharSequence text = tasks.get(position).title;
+                Toast.makeText(getApplicationContext(), text + " Options Clicked", Toast.LENGTH_SHORT).show();
             }
         });
     }

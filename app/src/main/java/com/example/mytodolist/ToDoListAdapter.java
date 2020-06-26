@@ -2,10 +2,13 @@ package com.example.mytodolist;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -19,6 +22,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHo
     Context context;
     OnItemClickListener mListener;
 
+
     public ToDoListAdapter(ArrayList<ToDoTask> tasks, Context context) {
         this.tasks = tasks;
         this.context = context;
@@ -26,6 +30,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHo
 
     public interface OnItemClickListener {
         void OnItemClick(int position);
+        void OnOptionsClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -72,6 +77,19 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHo
                         // making sure the item still exists
                         if (position != RecyclerView.NO_POSITION) {
                             mListener.OnItemClick(position);
+                        }
+                    }
+                }
+            });
+
+            optionsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mListener != null) {
+                        int position = getAdapterPosition();
+                        // making sure the item still exists
+                        if (position != RecyclerView.NO_POSITION) {
+                            mListener.OnOptionsClick(position);
                         }
                     }
                 }
