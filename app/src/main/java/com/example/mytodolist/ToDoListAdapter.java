@@ -4,11 +4,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -90,6 +92,30 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHo
                         // making sure the item still exists
                         if (position != RecyclerView.NO_POSITION) {
                             mListener.OnOptionsClick(position);
+
+                            //creating a popup menu
+                            PopupMenu popup = new PopupMenu(context, view);
+                            //inflating menu from xml resource
+                            popup.inflate(R.menu.task_options);
+                            //adding click listener
+                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item) {
+                                    switch (item.getItemId()) {
+                                        case R.id.edit:
+                                            //handle menu1 click
+                                            return true;
+                                        case R.id.delete:
+                                            //handle menu2 click
+                                            return true;
+                                        default:
+                                            return false;
+                                    }
+                                }
+                            });
+                            //displaying the popup
+                            popup.show();
+
                         }
                     }
                 }
