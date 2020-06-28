@@ -5,11 +5,11 @@
         android:id="@+id/addTask"
         android:icon="@drawable/ic_add"
         android:title="Add Task"
-        app:showAsAction="always|ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/TasksDone"
         android:icon="@drawable/ic_done"
-        android:title="Done Tasks"
+        android:title="View Done Tasks"
         app:showAsAction="always" />
 </menu>
