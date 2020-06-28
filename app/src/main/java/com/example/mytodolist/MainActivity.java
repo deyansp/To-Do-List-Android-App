@@ -26,13 +26,13 @@ public class MainActivity extends AppCompatActivity {
         initRecyclerView();
     }
 
-    /*@Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_toolbar_menu, menu);
         return true;
-    }*/
+    }
 
     private void initTasks(){
         ToDoTask task1 = new ToDoTask("Call grandma", "On Viber this Tuesday.");
