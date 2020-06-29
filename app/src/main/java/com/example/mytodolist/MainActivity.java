@@ -5,9 +5,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
+
         initTasks();
         initRecyclerView();
     }
@@ -32,6 +35,18 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_toolbar_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.addTask:
+                startAddTaskActivity();
+                return true;
+            case R.id.viewDoneTasks:
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initTasks(){
@@ -63,6 +78,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), text + " Options Clicked", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void startAddTaskActivity() {
+        Intent intent = new Intent(this, AddTask.class);
+        startActivity(intent);
     }
 
 }
