@@ -62,5 +62,13 @@ public class AddTask extends AppCompatActivity {
         if (!validateTitle() | !validateDetails()) {
             return;
         }
+
+        String title = Objects.requireNonNull(textInputTaskName.getEditText()).getText().toString().trim();
+        ToDoTask newTask = new ToDoTask(title);
+
+        String details = Objects.requireNonNull(textInputTaskDetails.getEditText()).getText().toString().trim();
+        if (!details.isEmpty()) {
+            newTask.setDetails(details);
+        }
     }
 }
