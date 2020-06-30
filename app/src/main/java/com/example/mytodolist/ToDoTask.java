@@ -10,11 +10,20 @@ public class ToDoTask {
 
     public ToDoTask(String title) {
         this.title = title;
+        this.isDone = false;
     }
 
     public ToDoTask(CharSequence title, CharSequence details) {
         this.title = title;
         this.details = details;
+        this.isDone = false;
+    }
+
+    public ToDoTask(CharSequence title, CharSequence details, Calendar date) {
+        this.title = title;
+        this.details = details;
+        this.deadline = date;
+        this.isDone = false;
     }
 
     public CharSequence getTitle() {
