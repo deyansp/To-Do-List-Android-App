@@ -39,10 +39,16 @@
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/text_input_edit_text_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:editable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:hint="@string/date"
-            android:inputType="datetime" />
+            android:inputType="datetime"
+            android:onClick="openSelectDateDialog"
+            android:textIsSelectable="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

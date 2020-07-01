@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         tasks.add(task1);
         ToDoTask task2 = new ToDoTask("Do the laundry");
         tasks.add(task2);
-        ToDoTask task3 = new ToDoTask("Twerk my ass off awhdjkashdjksahjdks jkdahsjkdhsjhskadhkjs jksahdkjashdkahdjkashdjkshjkawdhjks");
+        ToDoTask task3 = new ToDoTask("Twerk my ass off awhdjkashdjksahjdks");
         tasks.add(task3);
     }
 
@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startAddTaskActivity() {
-        Intent intent = new Intent(this, AddTask.class);
-        startActivity(intent);
+            Intent intent = new Intent(this, AddTask.class);
+            startActivity(intent);
     }
 
 }

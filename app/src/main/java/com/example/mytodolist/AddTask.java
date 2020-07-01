@@ -3,15 +3,20 @@ package com.example.mytodolist;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.DatePicker;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Objects;
 
-public class AddTask extends AppCompatActivity {
+public class AddTask extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private TextInputLayout textInputTaskName;
     private TextInputLayout textInputTaskDate;
     private TextInputLayout textInputTaskDetails;
@@ -30,7 +35,30 @@ public class AddTask extends AppCompatActivity {
 
         textInputTaskName = findViewById(R.id.text_input_task_name);
         textInputTaskDate = findViewById(R.id.text_input_task_date);
+        /*findViewById(R.id.text_input_edit_text_date).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogFragment newFragment = new DatePickerFragment();
+                newFragment.show(getSupportFragmentManager(), "datePicker");
+            }
+        });*/
         textInputTaskDetails = findViewById(R.id.text_input_task_details);
+    }
+
+    public void openSelectDateDialog(View view) {
+        DialogFragment newFragment = new DatePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, day);
+
+        String selectedDate = DateFormat.getDateInstance(DateFormat.FULL).format(c.getTime());
+        Objects.requireNonNull(textInputTaskDate.getEditText()).setText(selectedDate);
     }
 
     private boolean validateTitle() {
