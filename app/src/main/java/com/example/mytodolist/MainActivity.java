@@ -1,5 +1,6 @@
 package com.example.mytodolist;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -7,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     ArrayList<ToDoTask> tasks = new ArrayList<ToDoTask>();
+    ToDoListAdapter toDoListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +57,13 @@ public class MainActivity extends AppCompatActivity {
         tasks.add(task1);
         ToDoTask task2 = new ToDoTask("Do the laundry");
         tasks.add(task2);
-        ToDoTask task3 = new ToDoTask("Twerk my ass off awhdjkashdjksahjdks");
+        ToDoTask task3 = new ToDoTask("Workout");
         tasks.add(task3);
     }
 
     private void initRecyclerView() {
         RecyclerView recyclerView = findViewById(R.id.TaskList);
-        ToDoListAdapter toDoListAdapter = new ToDoListAdapter(tasks, this);
+        toDoListAdapter = new ToDoListAdapter(tasks, this);
 
         recyclerView.setAdapter(toDoListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -82,7 +85,20 @@ public class MainActivity extends AppCompatActivity {
 
     public void startAddTaskActivity() {
             Intent intent = new Intent(this, AddTask.class);
-            startActivity(intent);
+            startActivityForResult(intent, 1);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                // adding the new task to view
+                ToDoTask newTask = data.getParcelableExtra("New Task");
+                tasks.add(newTask);
+                toDoListAdapter.notifyDataSetChanged();
+            }
+        }
+    }
 }

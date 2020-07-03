@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.DatePicker;
@@ -35,13 +36,6 @@ public class AddTask extends AppCompatActivity implements DatePickerDialog.OnDat
 
         textInputTaskName = findViewById(R.id.text_input_task_name);
         textInputTaskDate = findViewById(R.id.text_input_task_date);
-        /*findViewById(R.id.text_input_edit_text_date).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DialogFragment newFragment = new DatePickerFragment();
-                newFragment.show(getSupportFragmentManager(), "datePicker");
-            }
-        });*/
         textInputTaskDetails = findViewById(R.id.text_input_task_details);
     }
 
@@ -87,10 +81,12 @@ public class AddTask extends AppCompatActivity implements DatePickerDialog.OnDat
     }
 
     public void confirmInput(View v) {
+        // checking for input errors
         if (!validateTitle() | !validateDetails()) {
             return;
         }
 
+        // storing the input in a new ToDoTask object
         String title = Objects.requireNonNull(textInputTaskName.getEditText()).getText().toString().trim();
         ToDoTask newTask = new ToDoTask(title);
 
@@ -98,5 +94,16 @@ public class AddTask extends AppCompatActivity implements DatePickerDialog.OnDat
         if (!details.isEmpty()) {
             newTask.setDetails(details);
         }
+
+        String date = Objects.requireNonNull(textInputTaskDate.getEditText()).getText().toString().trim();
+        if (!date.isEmpty()) {
+            newTask.setDeadline(date);
+        }
+
+        // sending result back to main activity
+        Intent intentResult = new Intent();
+        intentResult.putExtra("New Task", newTask);
+        setResult(RESULT_OK, intentResult);
+        finish();
     }
 }
