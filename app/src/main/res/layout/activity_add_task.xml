@@ -72,10 +72,11 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
+        android:id="@+id/button_save_task"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="confirmInput"
         android:padding="16dp"
-        android:text="Save Task" />
+        android:text="@string/save_task" />
 
 </LinearLayout>

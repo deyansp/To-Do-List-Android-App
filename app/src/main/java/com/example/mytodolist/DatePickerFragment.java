@@ -22,8 +22,11 @@ public class DatePickerFragment extends DialogFragment  {
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
 
-        // Create a new instance of DatePickerDialog and return it
-        return new DatePickerDialog(getActivity(), (DatePickerDialog.OnDateSetListener) getActivity(), year, month, day);
+        // Create a new instance of DatePickerDialog and remove past dates from selection range
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), (DatePickerDialog.OnDateSetListener) getActivity(), year, month, day);
+        datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
+
+        return datePickerDialog;
     }
 
   /*  @Override
