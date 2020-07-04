@@ -28,8 +28,21 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
-        initTasks();
+        if (savedInstanceState != null)
+        {
+            tasks = savedInstanceState.getParcelableArrayList("Tasks Array");
+        }
+        else
+            initTasks();
         initRecyclerView();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // saving the array of ToDoTask objects
+        outState.putParcelableArrayList("Tasks Array",tasks);
     }
 
     @Override
