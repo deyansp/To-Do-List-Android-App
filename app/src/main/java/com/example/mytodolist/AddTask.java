@@ -106,4 +106,10 @@ public class AddTask extends AppCompatActivity implements DatePickerDialog.OnDat
         setResult(RESULT_OK, intentResult);
         finish();
     }
+
+    public void cancelActivity(View view) {
+        Intent intentResult = new Intent();
+        setResult(RESULT_CANCELED, intentResult);
+        finish();
+    }
 }

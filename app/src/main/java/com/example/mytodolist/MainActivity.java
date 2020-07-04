@@ -112,6 +112,9 @@ public class MainActivity extends AppCompatActivity {
                 tasks.add(newTask);
                 toDoListAdapter.notifyDataSetChanged();
             }
+            if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(getApplicationContext(), "New task not saved", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

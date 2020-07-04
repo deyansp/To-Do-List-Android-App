@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -33,27 +36,6 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_task_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        app:errorEnabled="true">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_task_date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:editable="false"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:hint="@string/date"
-            android:inputType="datetime"
-            android:onClick="openSelectDateDialog"
-            android:textIsSelectable="true" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_task_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -71,12 +53,53 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/button_save_task"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_task_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="confirmInput"
         android:padding="16dp"
-        android:text="@string/save_task" />
+        app:errorEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_text_task_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:hint="@string/date"
+            android:inputType="datetime"
+            android:onClick="openSelectDateDialog"
+            android:textIsSelectable="true" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_layout_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
+
+        <Button
+            android:id="@+id/button_cancel_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="cancelActivity"
+            android:padding="16dp"
+            android:text="Cancel" />
+
+        <Button
+            android:id="@+id/button_save_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#E91E63"
+            android:onClick="confirmInput"
+            android:padding="16dp"
+            android:text="@string/save_task"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
 
 </LinearLayout>
+</ScrollView>
