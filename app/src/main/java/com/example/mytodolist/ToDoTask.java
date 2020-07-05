@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.Calendar;
@@ -21,20 +22,20 @@ public class ToDoTask implements Parcelable {
         this.title = title;
         this.isDone = false;
     }
-
+    @Ignore
     public ToDoTask(String title, String details) {
         this.title = title;
         this.details = details;
         this.isDone = false;
     }
-
+    @Ignore
     public ToDoTask(String title, String details, String date) {
         this.title = title;
         this.details = details;
         this.deadline = date;
         this.isDone = false;
     }
-
+    @Ignore
     protected ToDoTask(Parcel in) {
         id = in.readInt();
         title = in.readString();

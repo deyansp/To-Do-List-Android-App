@@ -6,7 +6,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import java.util.ArrayList;
+import java.util.List;
 
 // interface through which the Room library will generate the necessary db code
 @Dao
@@ -19,13 +19,13 @@ public interface ToDoTaskDao  {
 
     @Delete
     void delete(ToDoTask task);
-
+    // TODO implement conversion in MainActivity to ArrayList from List since Room doesn't support ArrayList
     @Query("SELECT * FROM to_do_tasks")
-    ArrayList<ToDoTask> getAllTasks();
+    List<ToDoTask> getAllTasks();
 
     @Query("SELECT * FROM to_do_tasks WHERE isDone = 'true'")
-    ArrayList<ToDoTask> getAllCompletedTasks();
+    List<ToDoTask> getAllCompletedTasks();
 
     @Query("SELECT * FROM to_do_tasks WHERE isDone = 'false'")
-    ArrayList<ToDoTask> getAllUncompletedTasks();
+    List<ToDoTask> getAllUncompletedTasks();
 }

@@ -84,13 +84,13 @@ public class MainActivity extends AppCompatActivity {
         toDoListAdapter.setOnItemClickListener(new ToDoListAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(int position) {
-                CharSequence text = tasks.get(position).title;
+                CharSequence text = tasks.get(position).getTitle();
                 Toast.makeText(getApplicationContext(), text + " Clicked", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void OnOptionsClick(int position) {
-                CharSequence text = tasks.get(position).title;
+                CharSequence text = tasks.get(position).getTitle();
                 Toast.makeText(getApplicationContext(), text + " Options Clicked", Toast.LENGTH_SHORT).show();
             }
         });
@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 ToDoTask newTask = data.getParcelableExtra("New Task");
                 tasks.add(newTask);
                 toDoListAdapter.notifyDataSetChanged();
+                //toDoListAdapter.notifyItemInserted(toDoListAdapter.getItemCount() + 1);
             }
             if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(getApplicationContext(), "New task not saved", Toast.LENGTH_SHORT).show();
