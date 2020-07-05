@@ -3,13 +3,19 @@ package com.example.mytodolist;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Calendar;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
+import java.util.Calendar;
+@Entity(tableName = "to_do_tasks")
 public class ToDoTask implements Parcelable {
-    String title;
-    String details;
-    boolean isDone;
-    String deadline;
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+
+    private String title;
+    private String details;
+    private boolean isDone;
+    private String deadline;
 
     public ToDoTask(String title) {
         this.title = title;
@@ -30,6 +36,7 @@ public class ToDoTask implements Parcelable {
     }
 
     protected ToDoTask(Parcel in) {
+        id = in.readInt();
         title = in.readString();
         details = in.readString();
         isDone = in.readByte() != 0;
@@ -47,6 +54,10 @@ public class ToDoTask implements Parcelable {
             return new ToDoTask[size];
         }
     };
+
+    public int getId() { return id; }
+
+    public void setId(int id) { this.id = id; }
 
     public String getTitle() {
         return title;
@@ -87,6 +98,7 @@ public class ToDoTask implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
         parcel.writeString(title);
         parcel.writeString(details);
         parcel.writeByte((byte) (isDone ? 1 : 0));
