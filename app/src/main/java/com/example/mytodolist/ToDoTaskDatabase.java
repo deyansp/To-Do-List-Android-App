@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 
 import static androidx.room.Room.*;
 
-@Database(entities = ToDoTask.class, version = 1, exportSchema = false)
+@Database(entities = {ToDoTask.class}, version = 1, exportSchema = false)
 public abstract class ToDoTaskDatabase extends RoomDatabase {
 
     private static ToDoTaskDatabase instance;

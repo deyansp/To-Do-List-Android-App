@@ -41,6 +41,7 @@ public class ToDoTask implements Parcelable {
         title = in.readString();
         details = in.readString();
         isDone = in.readByte() != 0;
+        //isDone = in.readString();
         deadline = in.readString();
     }
 
@@ -76,11 +77,11 @@ public class ToDoTask implements Parcelable {
         this.details = details;
     }
 
-    public boolean isDone() {
+    public boolean getIsDone() {
         return isDone;
     }
 
-    public void setDone(boolean status) {
+    public void setIsDone(boolean status) {
         isDone = status;
     }
 
@@ -103,6 +104,7 @@ public class ToDoTask implements Parcelable {
         parcel.writeString(title);
         parcel.writeString(details);
         parcel.writeByte((byte) (isDone ? 1 : 0));
+        //parcel.writeString(isDone);
         parcel.writeString(deadline);
     }
 }

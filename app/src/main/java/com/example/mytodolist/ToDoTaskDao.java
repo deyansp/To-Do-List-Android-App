@@ -19,13 +19,18 @@ public interface ToDoTaskDao  {
 
     @Delete
     void delete(ToDoTask task);
+
     // TODO implement conversion in MainActivity to ArrayList from List since Room doesn't support ArrayList
     @Query("SELECT * FROM to_do_tasks")
     List<ToDoTask> getAllTasks();
 
-    @Query("SELECT * FROM to_do_tasks WHERE isDone = 'true'")
+    @Query("SELECT * FROM to_do_tasks WHERE isDone = 1")
     List<ToDoTask> getAllCompletedTasks();
 
-    @Query("SELECT * FROM to_do_tasks WHERE isDone = 'false'")
+    @Query("SELECT * FROM to_do_tasks WHERE isDone = 0")
     List<ToDoTask> getAllUncompletedTasks();
+
+    @Query("SELECT * FROM to_do_tasks WHERE id = :id_num ")
+    ToDoTask getTaskById(int id_num);
+
 }

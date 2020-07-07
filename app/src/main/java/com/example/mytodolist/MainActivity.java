@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,8 +19,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    ArrayList<ToDoTask> tasks = new ArrayList<ToDoTask>();
+    volatile ArrayList<ToDoTask> tasks = new ArrayList<ToDoTask>();
     ToDoListAdapter toDoListAdapter;
+    DatabaseHandler dbHandler;
+    Handler mainThreadHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +32,11 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
-        if (savedInstanceState != null)
-        {
+        if (savedInstanceState != null && dbHandler != null) {
             tasks = savedInstanceState.getParcelableArrayList("Tasks Array");
+        } else {
+            getTasksFromDB();
         }
-        else
-            initTasks();
         initRecyclerView();
     }
 
@@ -94,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), text + " Options Clicked", Toast.LENGTH_SHORT).show();
             }
         });
+
+        //toDoListAdapter.notifyDataSetChanged();
     }
 
     public void startAddTaskActivity() {
@@ -109,7 +114,9 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 // adding the new task to view
                 ToDoTask newTask = data.getParcelableExtra("New Task");
-                tasks.add(newTask);
+                //tasks.add(newTask);
+                saveTaskToDB(newTask);
+
                 toDoListAdapter.notifyDataSetChanged();
                 //toDoListAdapter.notifyItemInserted(toDoListAdapter.getItemCount() + 1);
             }
@@ -117,5 +124,49 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "New task not saved", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public void getTasksFromDB() {
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                Log.i("DB", "run: get from db START");
+                dbHandler = new DatabaseHandler(getApplication());
+                tasks = dbHandler.getAllUncompletedTasks();
+
+                Log.i("DB", "run: get from db END");
+                Log.i("DB", "run: status of first " + String.valueOf(tasks.get(0).getIsDone()));
+            }
+        });
+        try {
+            t.start();
+            t.join();
+            mainThreadHandler.post(new Runnable() {
+                public void run() {
+                    Log.i("DB", "run: num stuff in tasks " + String.valueOf(tasks.size()));
+                    toDoListAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+        catch (Exception e) {
+            final Exception exception = e;
+            e.printStackTrace();
+            mainThreadHandler.post(new Runnable() {
+                public void run() {
+                    Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    public void saveTaskToDB(ToDoTask task) {
+        final ToDoTask task1 = task;
+        new Thread(new Runnable() {
+            public void run() {
+                dbHandler.insert(task1);
+                Log.i("DB INSERT", task1.getTitle());
+                final boolean isDone = task1.getIsDone();
+                 Log.i("DB INSERT", String.valueOf(isDone));
+            }
+        }).start();
     }
 }
