@@ -25,7 +25,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     volatile ArrayList<ToDoTask> tasks = new ArrayList<ToDoTask>();
-    ToDoListAdapter toDoListAdapter;
+    //ToDoListAdapter toDoListAdapter;
 
     private ToDoTaskViewModel taskViewModel;
     //DatabaseHandler dbHandler;
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.TaskList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        toDoListAdapter = new ToDoListAdapter();
+        final ToDoListAdapter toDoListAdapter = new ToDoListAdapter();
         recyclerView.setAdapter(toDoListAdapter);
 
         taskViewModel = ViewModelProviders.of(this).get(ToDoTaskViewModel.class);
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 //tasks.add(newTask);
                 //saveTaskToDB(newTask);
 
-                toDoListAdapter.notifyDataSetChanged();
+                //toDoListAdapter.notifyDataSetChanged();
                 //toDoListAdapter.notifyItemInserted(toDoListAdapter.getItemCount() + 1);
             }
             if (resultCode == RESULT_CANCELED) {
