@@ -1,17 +1,21 @@
 package com.example.mytodolist;
 import android.app.Application;
 
+import android.app.Application;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
-public class ToDoTaskViewModel {
-    public class taskViewModel extends AndroidViewModel {
+//public class ToDoTaskViewModel {
+    public class ToDoTaskViewModel extends AndroidViewModel {
         private DatabaseHandler repository;
         private LiveData<List<ToDoTask>> allTasks;
-        public taskViewModel(@NonNull Application application) {
+
+        public ToDoTaskViewModel(@NonNull Application application) {
             super(application);
             repository = new DatabaseHandler(application);
             allTasks = repository.getAllTasks();
@@ -44,4 +48,4 @@ public class ToDoTaskViewModel {
             return repository.getTaskById(id_num);
         }
     }
-}
+//}

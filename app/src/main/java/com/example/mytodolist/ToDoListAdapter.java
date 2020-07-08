@@ -18,17 +18,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHolder>{
-    ArrayList<ToDoTask> tasks;
+    private List<ToDoTask> tasks = new ArrayList<>();
     Context context;
     OnItemClickListener mListener;
 
 
-    public ToDoListAdapter(ArrayList<ToDoTask> tasks, Context context) {
+    /*public ToDoListAdapter(ArrayList<ToDoTask> tasks, Context context) {
         this.tasks = tasks;
         this.context = context;
-    }
+    }*/
 
     public interface OnItemClickListener {
         void OnItemClick(int position);
@@ -56,6 +57,12 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHo
     @Override
     public int getItemCount() {
         return tasks.size();
+    }
+
+    // updates adapter with list of ToDoTasks
+    public void setTasks(List<ToDoTask> tasks) {
+        this.tasks = tasks;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

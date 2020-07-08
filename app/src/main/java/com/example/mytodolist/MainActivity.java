@@ -3,6 +3,10 @@ package com.example.mytodolist;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,12 +21,15 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     volatile ArrayList<ToDoTask> tasks = new ArrayList<ToDoTask>();
     ToDoListAdapter toDoListAdapter;
-    DatabaseHandler dbHandler;
-    Handler mainThreadHandler = new Handler();
+
+    private ToDoTaskViewModel taskViewModel;
+    //DatabaseHandler dbHandler;
+    //Handler mainThreadHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +39,12 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
-        if (savedInstanceState != null && dbHandler != null) {
+        if (savedInstanceState != null) {
             tasks = savedInstanceState.getParcelableArrayList("Tasks Array");
         } else {
-            getTasksFromDB();
+
+            //taskViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(ToDoTaskViewModel.class);
+            //getTasksFromDB();
         }
         initRecyclerView();
     }
@@ -79,12 +88,20 @@ public class MainActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         RecyclerView recyclerView = findViewById(R.id.TaskList);
-        toDoListAdapter = new ToDoListAdapter(tasks, this);
-
-        recyclerView.setAdapter(toDoListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        toDoListAdapter.setOnItemClickListener(new ToDoListAdapter.OnItemClickListener() {
+        toDoListAdapter = new ToDoListAdapter();
+        recyclerView.setAdapter(toDoListAdapter);
+
+        taskViewModel = ViewModelProviders.of(this).get(ToDoTaskViewModel.class);
+        taskViewModel.getAllTasks().observe(this, new Observer<List<ToDoTask>>() {
+            @Override
+            public void onChanged(@Nullable List<ToDoTask> tasks) {
+                toDoListAdapter.setTasks(tasks);
+            }
+        });
+
+        /*toDoListAdapter.setOnItemClickListener(new ToDoListAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(int position) {
                 CharSequence text = tasks.get(position).getTitle();
@@ -96,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 CharSequence text = tasks.get(position).getTitle();
                 Toast.makeText(getApplicationContext(), text + " Options Clicked", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
         //toDoListAdapter.notifyDataSetChanged();
     }
@@ -115,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 // adding the new task to view
                 ToDoTask newTask = data.getParcelableExtra("New Task");
                 //tasks.add(newTask);
-                saveTaskToDB(newTask);
+                //saveTaskToDB(newTask);
 
                 toDoListAdapter.notifyDataSetChanged();
                 //toDoListAdapter.notifyItemInserted(toDoListAdapter.getItemCount() + 1);
@@ -126,12 +143,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void getTasksFromDB() {
+    /*public void getTasksFromDB() {
         Thread t = new Thread(new Runnable() {
             public void run() {
                 Log.i("DB", "run: get from db START");
                 dbHandler = new DatabaseHandler(getApplication());
-                tasks = dbHandler.getAllUncompletedTasks();
+                //tasks = dbHandler.getAllUncompletedTasks();
 
                 Log.i("DB", "run: get from db END");
                 Log.i("DB", "run: status of first " + String.valueOf(tasks.get(0).getIsDone()));
@@ -168,5 +185,5 @@ public class MainActivity extends AppCompatActivity {
                  Log.i("DB INSERT", String.valueOf(isDone));
             }
         }).start();
-    }
+    }*/
 }
