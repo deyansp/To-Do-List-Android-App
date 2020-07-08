@@ -1,5 +1,6 @@
 package com.example.mytodolist;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -22,13 +23,13 @@ public interface ToDoTaskDao  {
 
     // TODO implement conversion in MainActivity to ArrayList from List since Room doesn't support ArrayList
     @Query("SELECT * FROM to_do_tasks")
-    List<ToDoTask> getAllTasks();
+    LiveData<List<ToDoTask>> getAllTasks();
 
     @Query("SELECT * FROM to_do_tasks WHERE isDone = 1")
-    List<ToDoTask> getAllCompletedTasks();
+    LiveData<List<ToDoTask>> getAllCompletedTasks();
 
     @Query("SELECT * FROM to_do_tasks WHERE isDone = 0")
-    List<ToDoTask> getAllUncompletedTasks();
+    LiveData<List<ToDoTask>> getAllUncompletedTasks();
 
     @Query("SELECT * FROM to_do_tasks WHERE id = :id_num ")
     ToDoTask getTaskById(int id_num);

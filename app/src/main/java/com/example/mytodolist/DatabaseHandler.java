@@ -2,6 +2,8 @@ package com.example.mytodolist;
 
 import android.app.Application;
 
+import androidx.lifecycle.LiveData;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,25 +28,25 @@ public class DatabaseHandler  {
         delete(task);
     }
 
-    public ArrayList<ToDoTask> getAllTasks() {
-        List<ToDoTask> tasksList = taskDao.getAllTasks();
+    public LiveData<List<ToDoTask>> getAllTasks() {
+        LiveData<List<ToDoTask>> tasksList = taskDao.getAllTasks();
 
         // casting to ArrayList used by activities
-        return (ArrayList<ToDoTask>) tasksList;
+        return tasksList;
     }
 
-    public ArrayList<ToDoTask> getAllCompletedTasks() {
-        List<ToDoTask> tasksList = taskDao.getAllCompletedTasks();
+    public LiveData<List<ToDoTask>> getAllCompletedTasks() {
+        LiveData<List<ToDoTask>> tasksList = taskDao.getAllCompletedTasks();
 
         // casting to ArrayList used by activities
-        return (ArrayList<ToDoTask>) tasksList;
+        return tasksList;
     }
 
-    public ArrayList<ToDoTask> getAllUncompletedTasks() {
-        List<ToDoTask> tasksList = taskDao.getAllUncompletedTasks();
+    public LiveData<List<ToDoTask>> getAllUncompletedTasks() {
+        LiveData<List<ToDoTask>> tasksList = taskDao.getAllUncompletedTasks();
 
         // casting to ArrayList used by activities
-        return (ArrayList<ToDoTask>) tasksList;
+        return tasksList;
     }
 
     public ToDoTask getTaskById(int id_num) {
