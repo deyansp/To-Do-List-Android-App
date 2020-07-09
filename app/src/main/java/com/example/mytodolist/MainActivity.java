@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -12,7 +13,9 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ClipData;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -22,8 +25,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class MainActivity extends AppCompatActivity {
     volatile ArrayList<ToDoTask> tasks = new ArrayList<ToDoTask>();
@@ -84,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = findViewById(R.id.TaskList);
+        final RecyclerView recyclerView = findViewById(R.id.TaskList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         final ToDoListAdapter toDoListAdapter = new ToDoListAdapter();
@@ -98,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // left and right swiping gestures for deleting tasks
+        // left and right swiping gestures for editing and deleting tasks
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -107,10 +114,35 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                taskViewModel.delete(toDoListAdapter.getTaskAt(viewHolder.getAdapterPosition()));
-                Toast.makeText(getApplicationContext(), "Task Deleted", Toast.LENGTH_SHORT).show();
+                int position = viewHolder.getAdapterPosition();
+                if (direction == ItemTouchHelper.RIGHT) {
+                    taskViewModel.delete(toDoListAdapter.getTaskAt(position));
+
+                    Toast.makeText(getApplicationContext(), "Task Deleted", Toast.LENGTH_SHORT).show();
+                }
+                if (direction == ItemTouchHelper.LEFT) {
+
+                }
+            }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
+                new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                        .addSwipeRightBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorAccent))
+                        .addSwipeRightActionIcon(R.drawable.ic_delete)
+                        .addSwipeRightLabel("Delete")
+                        .setSwipeRightLabelColor(ContextCompat.getColor(MainActivity.this, R.color.white))
+                        .addSwipeLeftBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.colorPrimaryDark))
+                        .addSwipeLeftActionIcon(R.drawable.ic_edit)
+                        .addSwipeLeftLabel("Edit")
+                        .setSwipeLeftLabelColor(ContextCompat.getColor(MainActivity.this, R.color.white))
+                        .create()
+                        .decorate();
             }
         }).attachToRecyclerView(recyclerView);
+
 
 
         /*toDoListAdapter.setOnItemClickListener(new ToDoListAdapter.OnItemClickListener() {
@@ -151,5 +183,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    
+
 }
