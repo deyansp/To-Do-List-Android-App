@@ -1,5 +1,6 @@
 package com.example.mytodolist;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -7,6 +8,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +27,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     volatile ArrayList<ToDoTask> tasks = new ArrayList<ToDoTask>();
+    public static final int ADD_NOTE_REQ_CODE = 1;
     //ToDoListAdapter toDoListAdapter;
 
     private ToDoTaskViewModel taskViewModel;
@@ -39,14 +42,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
-        if (savedInstanceState != null) {
-            tasks = savedInstanceState.getParcelableArrayList("Tasks Array");
-        } else {
-
-            //taskViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(ToDoTaskViewModel.class);
-            //getTasksFromDB();
-        }
         initRecyclerView();
+
     }
 
     @Override
@@ -101,6 +98,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // left and right swiping gestures for deleting tasks
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                taskViewModel.delete(toDoListAdapter.getTaskAt(viewHolder.getAdapterPosition()));
+                Toast.makeText(getApplicationContext(), "Task Deleted", Toast.LENGTH_SHORT).show();
+            }
+        }).attachToRecyclerView(recyclerView);
+
+
         /*toDoListAdapter.setOnItemClickListener(new ToDoListAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(int position) {
@@ -119,71 +131,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startAddTaskActivity() {
-            Intent intent = new Intent(this, AddTask.class);
-            startActivityForResult(intent, 1);
+            Intent intent = new Intent(this, AddTaskActivity.class);
+            startActivityForResult(intent, ADD_NOTE_REQ_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1) {
+        if (requestCode == ADD_NOTE_REQ_CODE) {
             if (resultCode == RESULT_OK) {
                 // adding the new task to view
                 ToDoTask newTask = data.getParcelableExtra("New Task");
-                //tasks.add(newTask);
-                //saveTaskToDB(newTask);
-
-                //toDoListAdapter.notifyDataSetChanged();
-                //toDoListAdapter.notifyItemInserted(toDoListAdapter.getItemCount() + 1);
+                taskViewModel.insert(newTask);
+                Toast.makeText(getApplicationContext(), "Added new task", Toast.LENGTH_SHORT).show();
             }
             if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(getApplicationContext(), "New task not saved", Toast.LENGTH_SHORT).show();
             }
         }
     }
-
-    /*public void getTasksFromDB() {
-        Thread t = new Thread(new Runnable() {
-            public void run() {
-                Log.i("DB", "run: get from db START");
-                dbHandler = new DatabaseHandler(getApplication());
-                //tasks = dbHandler.getAllUncompletedTasks();
-
-                Log.i("DB", "run: get from db END");
-                Log.i("DB", "run: status of first " + String.valueOf(tasks.get(0).getIsDone()));
-            }
-        });
-        try {
-            t.start();
-            t.join();
-            mainThreadHandler.post(new Runnable() {
-                public void run() {
-                    Log.i("DB", "run: num stuff in tasks " + String.valueOf(tasks.size()));
-                    toDoListAdapter.notifyDataSetChanged();
-                }
-            });
-        }
-        catch (Exception e) {
-            final Exception exception = e;
-            e.printStackTrace();
-            mainThreadHandler.post(new Runnable() {
-                public void run() {
-                    Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
-
-    public void saveTaskToDB(ToDoTask task) {
-        final ToDoTask task1 = task;
-        new Thread(new Runnable() {
-            public void run() {
-                dbHandler.insert(task1);
-                Log.i("DB INSERT", task1.getTitle());
-                final boolean isDone = task1.getIsDone();
-                 Log.i("DB INSERT", String.valueOf(isDone));
-            }
-        }).start();
-    }*/
+    
 }

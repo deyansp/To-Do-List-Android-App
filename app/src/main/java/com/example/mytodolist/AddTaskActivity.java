@@ -17,7 +17,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Objects;
 
-public class AddTask extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class AddTaskActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private TextInputLayout textInputTaskName;
     private TextInputLayout textInputTaskDate;
     private TextInputLayout textInputTaskDetails;

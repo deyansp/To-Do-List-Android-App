@@ -65,6 +65,10 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    public ToDoTask getTaskAt(int position) {
+        return tasks.get(position);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         CheckBox checkBox;
         TextView mainText;
