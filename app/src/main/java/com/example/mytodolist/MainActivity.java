@@ -19,6 +19,7 @@ import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.sax.TextElementListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,8 +34,8 @@ import java.util.List;
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class MainActivity extends AppCompatActivity {
-    volatile ArrayList<ToDoTask> tasks = new ArrayList<ToDoTask>();
-    public static final int ADD_NOTE_REQ_CODE = 1;
+    public static final int ADD_TASK_REQ_CODE = 1;
+    public static final int EDIT_TASK_REQ_CODE = 2;
     //ToDoListAdapter toDoListAdapter;
 
     private ToDoTaskViewModel taskViewModel;
@@ -53,13 +54,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
+    /*@Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         // saving the array of ToDoTask objects
         outState.putParcelableArrayList("Tasks Array",tasks);
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -79,15 +80,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void initTasks(){
-        ToDoTask task1 = new ToDoTask("Call grandma", "On Viber this Tuesday.");
-        tasks.add(task1);
-        ToDoTask task2 = new ToDoTask("Do the laundry");
-        tasks.add(task2);
-        ToDoTask task3 = new ToDoTask("Workout");
-        tasks.add(task3);
     }
 
     private void initRecyclerView() {
@@ -117,11 +109,14 @@ public class MainActivity extends AppCompatActivity {
                 int position = viewHolder.getAdapterPosition();
                 if (direction == ItemTouchHelper.RIGHT) {
                     taskViewModel.delete(toDoListAdapter.getTaskAt(position));
-
                     Toast.makeText(getApplicationContext(), "Task Deleted", Toast.LENGTH_SHORT).show();
                 }
                 if (direction == ItemTouchHelper.LEFT) {
-
+                    //Toast.makeText(getApplicationContext(), "Task Editing", Toast.LENGTH_SHORT).show();
+                    //toDoListAdapter.notifyItemChanged(position);
+                    Log.i("RESULT", "RECYCLER VIEW: " + toDoListAdapter.getTaskAt(position).getId());
+                    startEditTaskActivity(toDoListAdapter.getTaskAt(position));
+                    //recyclerView.removeItemDecorationAt(position);
                 }
             }
 
@@ -143,8 +138,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }).attachToRecyclerView(recyclerView);
 
-
-
         /*toDoListAdapter.setOnItemClickListener(new ToDoListAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(int position) {
@@ -163,25 +156,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startAddTaskActivity() {
-            Intent intent = new Intent(this, AddTaskActivity.class);
-            startActivityForResult(intent, ADD_NOTE_REQ_CODE);
+        Intent intent = new Intent(this, AddEditTaskActivity.class);
+        startActivityForResult(intent, ADD_TASK_REQ_CODE);
+    }
+
+    public void startEditTaskActivity(ToDoTask task) {
+        Intent intentEdit = new Intent(this, AddEditTaskActivity.class);
+        intentEdit.putExtra("Edit Task", task);
+        startActivityForResult(intentEdit, EDIT_TASK_REQ_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == ADD_NOTE_REQ_CODE) {
-            if (resultCode == RESULT_OK) {
+        if (requestCode == ADD_TASK_REQ_CODE && resultCode == RESULT_OK) {
                 // adding the new task to view
-                ToDoTask newTask = data.getParcelableExtra("New Task");
-                taskViewModel.insert(newTask);
-                Toast.makeText(getApplicationContext(), "Added new task", Toast.LENGTH_SHORT).show();
+                try {
+                    ToDoTask newTask = data.getParcelableExtra("New Task");
+                    taskViewModel.insert(newTask);
+                    Toast.makeText(getApplicationContext(), "Added new task", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+                // updating existing task
+            } else if (requestCode == EDIT_TASK_REQ_CODE && resultCode == RESULT_OK) {
+                try {
+                    ToDoTask newTask = data.getParcelableExtra("Edit Task");
+                    Log.i("RESULT", "onActivityResult: " + newTask.getId());
+                    taskViewModel.update(newTask);
+                    Toast.makeText(getApplicationContext(), "Updated task", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "Activity task cancelled", Toast.LENGTH_SHORT).show();
             }
-            if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(getApplicationContext(), "New task not saved", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
 }

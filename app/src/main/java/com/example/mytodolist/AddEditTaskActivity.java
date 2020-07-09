@@ -17,26 +17,46 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Objects;
 
-public class AddTaskActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class AddEditTaskActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private TextInputLayout textInputTaskName;
     private TextInputLayout textInputTaskDate;
     private TextInputLayout textInputTaskDetails;
+
+    Intent parentIntent;
+    int taskID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
 
+        textInputTaskName = findViewById(R.id.text_input_task_name);
+        textInputTaskDate = findViewById(R.id.text_input_task_date);
+        textInputTaskDetails = findViewById(R.id.text_input_task_details);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
-        myToolbar.setTitle("Add New Task");
+
+        parentIntent = getIntent();
+
+        if (parentIntent.hasExtra("Edit Task")) {
+            myToolbar.setTitle("Edit Task");
+            ToDoTask editTask = parentIntent.getParcelableExtra("Edit Task");
+            // getting the id so that Room can use it to update the db
+            taskID = editTask.getId();
+
+            textInputTaskName.getEditText().setText(editTask.getTitle());
+
+            if (editTask.getDeadline() != null)
+                textInputTaskDate.getEditText().setText(editTask.getDeadline());
+
+            if (editTask.getDetails() != null)
+                textInputTaskDetails.getEditText().setText(editTask.getDetails());
+        } else
+            myToolbar.setTitle("Add New Task");
+
         setSupportActionBar(myToolbar);
         ActionBar ab = getSupportActionBar();
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
-
-        textInputTaskName = findViewById(R.id.text_input_task_name);
-        textInputTaskDate = findViewById(R.id.text_input_task_date);
-        textInputTaskDetails = findViewById(R.id.text_input_task_details);
     }
 
     public void openSelectDateDialog(View view) {
@@ -86,7 +106,7 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
             return;
         }
 
-        // storing the input in a new ToDoTask object
+        // storing the input in a new ToDoTask object TODO implement checks on fields instead of NONNULL
         String title = Objects.requireNonNull(textInputTaskName.getEditText()).getText().toString().trim();
         ToDoTask newTask = new ToDoTask(title);
 
@@ -100,11 +120,19 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
             newTask.setDeadline(date);
         }
 
-        // sending result back to main activity
-        Intent intentResult = new Intent();
-        intentResult.putExtra("New Task", newTask);
-        setResult(RESULT_OK, intentResult);
-        finish();
+        if (parentIntent.hasExtra("Edit Task")) {
+            newTask.setId(taskID);
+            Intent intentResult = new Intent();
+            intentResult.putExtra("Edit Task", newTask);
+            setResult(RESULT_OK, intentResult);
+            finish();
+        } else {
+            // sending result back to main activity
+            Intent intentResult = new Intent();
+            intentResult.putExtra("New Task", newTask);
+            setResult(RESULT_OK, intentResult);
+            finish();
+        }
     }
 
     public void cancelActivity(View view) {
