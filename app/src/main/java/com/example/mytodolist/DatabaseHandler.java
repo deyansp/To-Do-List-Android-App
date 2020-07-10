@@ -30,24 +30,32 @@ public class DatabaseHandler  {
         new DeleteToDoTaskAsyncTask(taskDao).execute(task);
     }
 
+    // used by main activity to display either pending or completed tasks
+   /* public LiveData<List<ToDoTask>> getAllTasks(boolean showCompletedTasks) {
+        LiveData<List<ToDoTask>> tasksList;
+        if (showCompletedTasks)
+             tasksList = taskDao.getAllCompletedTasks();
+        else
+            tasksList = taskDao.getAllUncompletedTasks();
+
+        return tasksList;
+    }*/
+
     public LiveData<List<ToDoTask>> getAllTasks() {
         LiveData<List<ToDoTask>> tasksList = taskDao.getAllTasks();
 
-        // casting to ArrayList used by activities
         return tasksList;
     }
 
     public LiveData<List<ToDoTask>> getAllCompletedTasks() {
         LiveData<List<ToDoTask>> tasksList = taskDao.getAllCompletedTasks();
 
-        // casting to ArrayList used by activities
         return tasksList;
     }
 
     public LiveData<List<ToDoTask>> getAllUncompletedTasks() {
         LiveData<List<ToDoTask>> tasksList = taskDao.getAllUncompletedTasks();
 
-        // casting to ArrayList used by activities
         return tasksList;
     }
 

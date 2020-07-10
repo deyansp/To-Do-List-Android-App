@@ -33,7 +33,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHo
 
     public interface OnItemClickListener {
         void OnItemClick(int position);
-        void OnOptionsClick(int position);
+        void OnCheckboxClick(int position, boolean markAsDone);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -51,6 +51,10 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHo
     // called for each item
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        // ticking its checkbox if it has been marked as done
+        if (tasks.get(position).getIsDone())
+            holder.checkBox.setChecked(true);
+        // setting the task name
         holder.mainText.setText(tasks.get(position).getTitle());
     }
 
@@ -82,6 +86,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHo
             optionsButton = itemView.findViewById(R.id.optionsButton);
             layout = itemView.findViewById(R.id.mainLayout);
 
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -95,38 +100,17 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHo
                 }
             });
 
-            optionsButton.setOnClickListener(new View.OnClickListener() {
+            checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (mListener != null) {
                         int position = getAdapterPosition();
                         // making sure the item still exists
                         if (position != RecyclerView.NO_POSITION) {
-                            mListener.OnOptionsClick(position);
-
-                            //creating a popup menu
-                            PopupMenu popup = new PopupMenu(context, view);
-                            //inflating menu from xml resource
-                            popup.inflate(R.menu.task_options);
-                            //adding click listener
-                            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                @Override
-                                public boolean onMenuItemClick(MenuItem item) {
-                                    switch (item.getItemId()) {
-                                        case R.id.edit:
-                                            //handle menu1 click
-                                            return true;
-                                        case R.id.delete:
-                                            //handle menu2 click
-                                            return true;
-                                        default:
-                                            return false;
-                                    }
-                                }
-                            });
-                            //displaying the popup
-                            popup.show();
-
+                            if (checkBox.isChecked())
+                                mListener.OnCheckboxClick(position, true);
+                            else
+                                mListener.OnCheckboxClick(position, false);
                         }
                     }
                 }

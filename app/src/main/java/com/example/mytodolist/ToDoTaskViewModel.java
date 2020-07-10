@@ -18,7 +18,7 @@ import java.util.List;
         public ToDoTaskViewModel(@NonNull Application application) {
             super(application);
             repository = new DatabaseHandler(application);
-            allTasks = repository.getAllTasks();
+            allTasks = repository.getAllUncompletedTasks();
         }
         public void insert(ToDoTask task) {
             repository.insert(task);
@@ -37,6 +37,10 @@ import java.util.List;
         public LiveData<List<ToDoTask>> getAllCompletedTasks() {
             allTasks = repository.getAllCompletedTasks();
             return allTasks;
+        }
+
+        public void switchToCompletedTasks() {
+            allTasks = repository.getAllCompletedTasks();
         }
 
         public LiveData<List<ToDoTask>> getAllUncompletedTasks() {

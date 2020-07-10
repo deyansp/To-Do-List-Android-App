@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -36,11 +37,10 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 public class MainActivity extends AppCompatActivity {
     public static final int ADD_TASK_REQ_CODE = 1;
     public static final int EDIT_TASK_REQ_CODE = 2;
-    //ToDoListAdapter toDoListAdapter;
 
     private ToDoTaskViewModel taskViewModel;
-    //DatabaseHandler dbHandler;
-    //Handler mainThreadHandler = new Handler();
+    private ToDoListAdapter toDoListAdapter;
+    private boolean showingCompletedTasks = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,23 +50,26 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
+        if (savedInstanceState != null)
+            showingCompletedTasks = savedInstanceState.getBoolean("Tasks Displayed");
         initRecyclerView();
 
     }
 
-    /*@Override
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         // saving the array of ToDoTask objects
-        outState.putParcelableArrayList("Tasks Array",tasks);
-    }*/
+        outState.putBoolean("Tasks Displayed", showingCompletedTasks);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_toolbar_menu, menu);
+        //if (showingCompletedTasks)
+
         return true;
     }
 
@@ -77,7 +80,16 @@ public class MainActivity extends AppCompatActivity {
                 startAddTaskActivity();
                 return true;
             case R.id.viewDoneTasks:
-            return true;
+                if (!showingCompletedTasks) {
+                    item.setIcon(R.drawable.ic_pending_tasks);
+                    taskViewModel.switchToCompletedTasks();
+                    showingCompletedTasks = true;
+                } else {
+                    item.setIcon(R.drawable.ic_done);
+                    taskViewModel.getAllUncompletedTasks();
+                    showingCompletedTasks = false;
+                }
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -112,11 +124,9 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Task Deleted", Toast.LENGTH_SHORT).show();
                 }
                 if (direction == ItemTouchHelper.LEFT) {
-                    //Toast.makeText(getApplicationContext(), "Task Editing", Toast.LENGTH_SHORT).show();
-                    //toDoListAdapter.notifyItemChanged(position);
-                    Log.i("RESULT", "RECYCLER VIEW: " + toDoListAdapter.getTaskAt(position).getId());
+                    toDoListAdapter.notifyItemChanged(position);
+                    //Log.i("RESULT", "RECYCLER VIEW: " + toDoListAdapter.getTaskAt(position).getId());
                     startEditTaskActivity(toDoListAdapter.getTaskAt(position));
-                    //recyclerView.removeItemDecorationAt(position);
                 }
             }
 
@@ -138,19 +148,25 @@ public class MainActivity extends AppCompatActivity {
             }
         }).attachToRecyclerView(recyclerView);
 
-        /*toDoListAdapter.setOnItemClickListener(new ToDoListAdapter.OnItemClickListener() {
+        toDoListAdapter.setOnItemClickListener(new ToDoListAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(int position) {
-                CharSequence text = tasks.get(position).getTitle();
-                Toast.makeText(getApplicationContext(), text + " Clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void OnOptionsClick(int position) {
-                CharSequence text = tasks.get(position).getTitle();
-                Toast.makeText(getApplicationContext(), text + " Options Clicked", Toast.LENGTH_SHORT).show();
+            public void OnCheckboxClick(int position, boolean markAsDone) {
+                if (markAsDone) {
+                    toDoListAdapter.getTaskAt(position).setIsDone(true);
+                    Toast.makeText(getApplicationContext(), "Marked DONE", Toast.LENGTH_SHORT).show();
+                } else {
+                    toDoListAdapter.getTaskAt(position).setIsDone(false);
+                    Toast.makeText(getApplicationContext(), "Marked NOT DONE", Toast.LENGTH_SHORT).show();
+                }
+                taskViewModel.update(toDoListAdapter.getTaskAt(position));
+                toDoListAdapter.notifyItemChanged(position);
             }
-        });*/
+        });
 
         //toDoListAdapter.notifyDataSetChanged();
     }
