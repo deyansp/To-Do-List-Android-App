@@ -2,6 +2,7 @@ package com.example.mytodolist;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -21,10 +23,12 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.sax.TextElementListener;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -39,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int EDIT_TASK_REQ_CODE = 2;
 
     private ToDoTaskViewModel taskViewModel;
-    private ToDoListAdapter toDoListAdapter;
+    //private ToDoListAdapter toDoListAdapter;
     private boolean showingCompletedTasks = false;
 
     @Override
@@ -53,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null)
             showingCompletedTasks = savedInstanceState.getBoolean("Tasks Displayed");
         initRecyclerView();
-
     }
 
     @Override
@@ -73,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    //@Override
+    public boolean onOptionsItemSelected(MenuItem item, final ToDoTaskViewModel taskViewModel) {
         switch (item.getItemId()) {
             case R.id.addTask:
                 startAddTaskActivity();
@@ -118,10 +121,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getAdapterPosition();
+                final int position = viewHolder.getAdapterPosition();
                 if (direction == ItemTouchHelper.RIGHT) {
-                    taskViewModel.delete(toDoListAdapter.getTaskAt(position));
-                    Toast.makeText(getApplicationContext(), "Task Deleted", Toast.LENGTH_SHORT).show();
+                    final ToDoTask tempTask = toDoListAdapter.getTaskAt(position);
+                    deleteTask(toDoListAdapter.getTaskAt(position));
+                    Snackbar.make(recyclerView, "Task Deleted", Snackbar.LENGTH_LONG)
+                            .setAction("Undo", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    addTask(tempTask);
+                                }
+                            }).show();
                 }
                 if (direction == ItemTouchHelper.LEFT) {
                     toDoListAdapter.notifyItemChanged(position);
@@ -151,7 +161,8 @@ public class MainActivity extends AppCompatActivity {
         toDoListAdapter.setOnItemClickListener(new ToDoListAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(int position) {
-                Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT).show();
+                TaskInfoDialog dialog = TaskInfoDialog.newInstance(toDoListAdapter.getTaskAt(position));
+                dialog.show(getSupportFragmentManager(), "Task Info Dialog");
             }
 
             @Override
@@ -163,12 +174,72 @@ public class MainActivity extends AppCompatActivity {
                     toDoListAdapter.getTaskAt(position).setIsDone(false);
                     Toast.makeText(getApplicationContext(), "Marked NOT DONE", Toast.LENGTH_SHORT).show();
                 }
-                taskViewModel.update(toDoListAdapter.getTaskAt(position));
+                updateTask(toDoListAdapter.getTaskAt(position));
                 toDoListAdapter.notifyItemChanged(position);
             }
         });
 
         //toDoListAdapter.notifyDataSetChanged();
+    }
+
+    /*public void openTaskInfoDialog(ToDoTask task) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View view = inflater.inflate(R.layout.task_info_dialog,null);
+
+        dialog.setView(view)
+                .setTitle("Task Details")
+                .setNegativeButton("close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                });
+
+        TextView taskTitle = view.findViewById(R.id.task_title);
+        taskTitle.setText(task.getTitle());
+
+        TextView taskDetails = view.findViewById(R.id.task_details);
+        if (task.getDetails() != null)
+            taskDetails.setText(task.getDetails());
+        else
+            taskDetails.setText("None");
+
+        TextView taskDate = view.findViewById(R.id.task_date);
+        if (task.getDeadline() != null)
+            taskDate.setText(task.getDeadline());
+        else
+            taskDate.setText("None");
+
+        dialog.create();
+        dialog.show();
+    }*/
+
+    public void addTask(ToDoTask task) {
+        try {
+            taskViewModel.insert(task);
+            Toast.makeText(getApplicationContext(), "Added new task", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void updateTask(ToDoTask task) {
+        try {
+            taskViewModel.update(task);
+            Toast.makeText(getApplicationContext(), "Updated task", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void deleteTask(ToDoTask task) {
+        try {
+            taskViewModel.delete(task);
+            Toast.makeText(getApplicationContext(), "Deleted task", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     public void startAddTaskActivity() {
@@ -187,24 +258,13 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ADD_TASK_REQ_CODE && resultCode == RESULT_OK) {
-                // adding the new task to view
-                try {
-                    ToDoTask newTask = data.getParcelableExtra("New Task");
-                    taskViewModel.insert(newTask);
-                    Toast.makeText(getApplicationContext(), "Added new task", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                }
+            // adding the new task to view
+            ToDoTask newTask = data.getParcelableExtra("New Task");
+            addTask(newTask);
                 // updating existing task
             } else if (requestCode == EDIT_TASK_REQ_CODE && resultCode == RESULT_OK) {
-                try {
-                    ToDoTask newTask = data.getParcelableExtra("Edit Task");
-                    Log.i("RESULT", "onActivityResult: " + newTask.getId());
-                    taskViewModel.update(newTask);
-                    Toast.makeText(getApplicationContext(), "Updated task", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                }
+                ToDoTask newTask = data.getParcelableExtra("Edit Task");
+                updateTask(newTask);
             } else {
                 Toast.makeText(getApplicationContext(), "Activity task cancelled", Toast.LENGTH_SHORT).show();
             }
