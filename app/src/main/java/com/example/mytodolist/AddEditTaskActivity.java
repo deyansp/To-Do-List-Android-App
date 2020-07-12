@@ -5,7 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -22,8 +25,10 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
     private TextInputLayout textInputTaskDate;
     private TextInputLayout textInputTaskDetails;
 
+    Calendar c;
     Intent parentIntent;
     int taskID;
+    NotificationHandler notificationHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         textInputTaskDate = findViewById(R.id.text_input_task_date);
         textInputTaskDetails = findViewById(R.id.text_input_task_details);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        notificationHandler = new NotificationHandler(this);
 
         parentIntent = getIntent();
 
@@ -66,7 +72,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
 
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-        Calendar c = Calendar.getInstance();
+        c = Calendar.getInstance();
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, day);
@@ -118,6 +124,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         String date = Objects.requireNonNull(textInputTaskDate.getEditText()).getText().toString().trim();
         if (!date.isEmpty()) {
             newTask.setDeadline(date);
+            notificationHandler.scheduleNotification(c, newTask);
         }
 
         if (parentIntent.hasExtra("Edit Task")) {
@@ -134,6 +141,37 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             finish();
         }
     }
+
+    /*private void scheduleNotification(Calendar c, ToDoTask task) {
+        // alarm service used to schedule a notification
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent (this , AlertReceiver.class);
+
+        // adding the ToDoTask object so that the task name can be retrieved later for the notification
+        Bundle bundle = new Bundle();
+        bundle.putInt("task_id", task.getId());
+        bundle.putString("task_name", task.getTitle());
+        intent.putExtra("notification", bundle);
+
+        // each pending intent has the task id as its req code to uniquely identify them
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, task.getId(), intent, 0);
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis() + 10000, pendingIntent);
+    }
+
+    private void cancelAlarm (ToDoTask task) {
+        // recreating the scheduled intent to cancel it
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent (this , AlertReceiver.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("task_id", task.getId());
+        bundle.putString("task_name", task.getTitle());
+        intent.putExtra("notification", bundle);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, task.getId(), intent, 0);
+
+        alarmManager.cancel(pendingIntent);
+    }*/
+
 
     public void cancelActivity(View view) {
         Intent intentResult = new Intent();

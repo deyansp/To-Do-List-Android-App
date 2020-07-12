@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
@@ -14,6 +16,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -38,6 +42,8 @@ import java.util.List;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
+import static com.example.mytodolist.AppNotificationChannel.CHANNEL_1_ID;
+
 public class MainActivity extends AppCompatActivity {
     public static final int ADD_TASK_REQ_CODE = 1;
     public static final int EDIT_TASK_REQ_CODE = 2;
@@ -46,10 +52,16 @@ public class MainActivity extends AppCompatActivity {
     //private ToDoListAdapter toDoListAdapter;
     private boolean showingCompletedTasks = false;
 
+    private NotificationManagerCompat notificationManager;
+    NotificationHandler notificationHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        notificationManager = NotificationManagerCompat.from(this);
+        notificationHandler = new NotificationHandler(this);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
@@ -77,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //@Override
-    public boolean onOptionsItemSelected(MenuItem item, final ToDoTaskViewModel taskViewModel) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.addTask:
                 startAddTaskActivity();
@@ -163,11 +175,14 @@ public class MainActivity extends AppCompatActivity {
             public void OnItemClick(int position) {
                 TaskInfoDialog dialog = TaskInfoDialog.newInstance(toDoListAdapter.getTaskAt(position));
                 dialog.show(getSupportFragmentManager(), "Task Info Dialog");
+
+                sendNotification(toDoListAdapter.getTaskAt(position));
             }
 
             @Override
             public void OnCheckboxClick(int position, boolean markAsDone) {
                 if (markAsDone) {
+                    notificationHandler.cancelScheduledNotification(toDoListAdapter.getTaskAt(position));
                     toDoListAdapter.getTaskAt(position).setIsDone(true);
                     Toast.makeText(getApplicationContext(), "Marked DONE", Toast.LENGTH_SHORT).show();
                 } else {
@@ -182,39 +197,21 @@ public class MainActivity extends AppCompatActivity {
         //toDoListAdapter.notifyDataSetChanged();
     }
 
-    /*public void openTaskInfoDialog(ToDoTask task) {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+    public void sendNotification(ToDoTask task) {
+        Intent openMainActivity = new Intent(this, MainActivity.class);
+        PendingIntent notificationIntent = PendingIntent.getActivity(this, 0, openMainActivity, 0);
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
+                .setSmallIcon(R.drawable.ic_done)
+                .setContentTitle(task.getTitle())
+                .setContentText("Due today")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                .setContentIntent(notificationIntent)
+                .setAutoCancel(true)
+                .build();
 
-        LayoutInflater inflater = this.getLayoutInflater();
-        View view = inflater.inflate(R.layout.task_info_dialog,null);
-
-        dialog.setView(view)
-                .setTitle("Task Details")
-                .setNegativeButton("close", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                });
-
-        TextView taskTitle = view.findViewById(R.id.task_title);
-        taskTitle.setText(task.getTitle());
-
-        TextView taskDetails = view.findViewById(R.id.task_details);
-        if (task.getDetails() != null)
-            taskDetails.setText(task.getDetails());
-        else
-            taskDetails.setText("None");
-
-        TextView taskDate = view.findViewById(R.id.task_date);
-        if (task.getDeadline() != null)
-            taskDate.setText(task.getDeadline());
-        else
-            taskDate.setText("None");
-
-        dialog.create();
-        dialog.show();
-    }*/
-
+        notificationManager.notify(task.getId(), notification);
+    }
     public void addTask(ToDoTask task) {
         try {
             taskViewModel.insert(task);
@@ -235,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void deleteTask(ToDoTask task) {
         try {
+            notificationHandler.cancelScheduledNotification(task);
             taskViewModel.delete(task);
             Toast.makeText(getApplicationContext(), "Deleted task", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
