@@ -4,4 +4,7 @@
     <string name="date">Date</string>
     <string name="details">Details</string>
     <string name="save_task">Save Task</string>
+    <string name="name">Name</string>
+    <string name="details_task_info_dialog">Details</string>
+    <string name="due_date">Due Date</string>
 </resources>

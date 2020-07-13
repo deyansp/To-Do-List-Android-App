@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="match_parent">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="30dp">
+    android:padding="?dialogPreferredPadding">
 
 
     <TextView
@@ -12,8 +14,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-black"
-        android:text="Name"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:text="@string/name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="?textColorAlertDialogListItem"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/task_title"
@@ -29,8 +33,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-black"
-        android:text="Details"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:text="@string/details"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="?textColorAlertDialogListItem"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/task_details"
@@ -46,9 +52,11 @@
         android:id="@+id/task_date_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Due Date"
         android:fontFamily="sans-serif-black"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+        android:text="@string/due_date"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="?textColorAlertDialogListItem"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/task_date"
@@ -58,3 +66,5 @@
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 </LinearLayout>
+
+</ScrollView>

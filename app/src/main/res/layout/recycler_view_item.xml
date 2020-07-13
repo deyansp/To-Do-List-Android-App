@@ -20,23 +20,24 @@
   <CheckBox
       android:layout_width="40dp"
       android:layout_height="40dp"
+      android:layout_centerVertical="true"
       android:id="@+id/checkbox" />
   <TextView
       android:id="@+id/mainText"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@+id/checkbox"
-      android:layout_toLeftOf="@+id/optionsButton"
+      android:layout_toEndOf="@+id/checkbox"
+      android:layout_toStartOf="@+id/optionsButton"
       android:layout_centerVertical="true"
       android:textColor="#000"
-      android:layout_marginLeft="10dp"
+      android:layout_marginStart="10dp"
       tools:text="@tools:sample/lorem" />
 
     <ImageButton
         android:id="@+id/optionsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:backgroundTint="#00FAFAFA"
         android:contentDescription="Button submenu with edit and delete options"

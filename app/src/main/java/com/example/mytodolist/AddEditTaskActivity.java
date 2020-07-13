@@ -25,9 +25,13 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
     private TextInputLayout textInputTaskDate;
     private TextInputLayout textInputTaskDetails;
 
+    // stores the user's selected due date
     Calendar c;
+
     Intent parentIntent;
     int taskID;
+
+    // used for scheduling reminder notification on the selected date
     NotificationHandler notificationHandler;
 
     @Override
@@ -42,41 +46,48 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         notificationHandler = new NotificationHandler(this);
 
         parentIntent = getIntent();
-
+        // checking if a task will be edited or if a new one will be created
+        // and adjusting the UI accordingly
         if (parentIntent.hasExtra("Edit Task")) {
             myToolbar.setTitle("Edit Task");
             ToDoTask editTask = parentIntent.getParcelableExtra("Edit Task");
+
             // getting the id so that Room can use it to update the db
             taskID = editTask.getId();
-
+            // setting the existing details to the input fields
             textInputTaskName.getEditText().setText(editTask.getTitle());
 
             if (editTask.getDeadline() != null)
-                textInputTaskDate.getEditText().setText(editTask.getDeadline());
+        textInputTaskDate.getEditText().setText(editTask.getDeadline());
 
-            if (editTask.getDetails() != null)
-                textInputTaskDetails.getEditText().setText(editTask.getDetails());
-        } else
+        if (editTask.getDetails() != null)
+            textInputTaskDetails.getEditText().setText(editTask.getDetails());
+        }
+        else
             myToolbar.setTitle("Add New Task");
 
         setSupportActionBar(myToolbar);
         ActionBar ab = getSupportActionBar();
-        // Enable the Up button
-        ab.setDisplayHomeAsUpEnabled(true);
+        // Enable the back button
+        if (ab != null)
+            ab.setDisplayHomeAsUpEnabled(true);
     }
 
+    // creating a DatePicker popup window
     public void openSelectDateDialog(View view) {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
+    // when the user sets the due date
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+        // storing date into Calendar variable
         c = Calendar.getInstance();
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, day);
-
+        // formatting the selected date and updating the input field
         String selectedDate = DateFormat.getDateInstance(DateFormat.FULL).format(c.getTime());
         Objects.requireNonNull(textInputTaskDate.getEditText()).setText(selectedDate);
     }
@@ -90,6 +101,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             textInputTaskName.setError("Title too long");
             return false;
         } else {
+            // removing any previous errors
             textInputTaskName.setError(null);
             return true;
         }
@@ -101,12 +113,14 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             textInputTaskDetails.setError("Text too long");
             return false;
         } else {
+            // removing any previous errors
             textInputTaskDetails.setError(null);
             return true;
         }
     }
 
-    public void confirmInput(View v) {
+    // method called by the Save button
+    public void sendTaskToMainActivity(View v) {
         // checking for input errors
         if (!validateTitle() | !validateDetails()) {
             return;
@@ -128,51 +142,21 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         }
 
         if (parentIntent.hasExtra("Edit Task")) {
+            // returning task id to update the correct task
             newTask.setId(taskID);
             Intent intentResult = new Intent();
             intentResult.putExtra("Edit Task", newTask);
             setResult(RESULT_OK, intentResult);
-            finish();
         } else {
-            // sending result back to main activity
+            // sending new ToDoTask object to main activity for db storage
             Intent intentResult = new Intent();
             intentResult.putExtra("New Task", newTask);
             setResult(RESULT_OK, intentResult);
-            finish();
         }
+        finish();
     }
 
-    /*private void scheduleNotification(Calendar c, ToDoTask task) {
-        // alarm service used to schedule a notification
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent (this , AlertReceiver.class);
-
-        // adding the ToDoTask object so that the task name can be retrieved later for the notification
-        Bundle bundle = new Bundle();
-        bundle.putInt("task_id", task.getId());
-        bundle.putString("task_name", task.getTitle());
-        intent.putExtra("notification", bundle);
-
-        // each pending intent has the task id as its req code to uniquely identify them
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, task.getId(), intent, 0);
-
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis() + 10000, pendingIntent);
-    }
-
-    private void cancelAlarm (ToDoTask task) {
-        // recreating the scheduled intent to cancel it
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent (this , AlertReceiver.class);
-        Bundle bundle = new Bundle();
-        bundle.putInt("task_id", task.getId());
-        bundle.putString("task_name", task.getTitle());
-        intent.putExtra("notification", bundle);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, task.getId(), intent, 0);
-
-        alarmManager.cancel(pendingIntent);
-    }*/
-
-
+    // when the cancel button is clicked
     public void cancelActivity(View view) {
         Intent intentResult = new Intent();
         setResult(RESULT_CANCELED, intentResult);

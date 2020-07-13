@@ -95,7 +95,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:backgroundTint="#E91E63"
-            android:onClick="confirmInput"
+            android:onClick="sendTaskToMainActivity"
             android:padding="16dp"
             android:text="@string/save_task"
             android:textColor="#FFFFFF" />
