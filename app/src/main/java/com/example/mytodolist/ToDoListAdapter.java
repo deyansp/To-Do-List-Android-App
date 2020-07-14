@@ -25,12 +25,6 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ViewHo
     Context context;
     OnItemClickListener mListener;
 
-
-    /*public ToDoListAdapter(ArrayList<ToDoTask> tasks, Context context) {
-        this.tasks = tasks;
-        this.context = context;
-    }*/
-
     public interface OnItemClickListener {
         void OnItemClick(int position);
         void OnCheckboxClick(int position, boolean markAsDone);

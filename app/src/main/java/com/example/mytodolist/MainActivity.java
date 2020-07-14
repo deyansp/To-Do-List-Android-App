@@ -1,43 +1,31 @@
 package com.example.mytodolist;
 
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.graphics.Canvas;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.content.ClipData;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Canvas;
-import android.os.Bundle;
-import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.sax.TextElementListener;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
@@ -49,18 +37,14 @@ public class MainActivity extends AppCompatActivity {
     public static final int EDIT_TASK_REQ_CODE = 2;
 
     private ToDoTaskViewModel taskViewModel;
-    //private ToDoListAdapter toDoListAdapter;
-    private boolean showingCompletedTasks = false;
-
-    private NotificationManagerCompat notificationManager;
-    NotificationHandler notificationHandler;
+    private boolean showingCompletedTasks;
+    private NotificationHandler notificationHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        notificationManager = NotificationManagerCompat.from(this);
         notificationHandler = new NotificationHandler(this);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -68,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState != null)
             showingCompletedTasks = savedInstanceState.getBoolean("Tasks Displayed");
+        else
+            showingCompletedTasks = false;
         initRecyclerView();
     }
 
@@ -97,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.viewDoneTasks:
                 if (!showingCompletedTasks) {
                     item.setIcon(R.drawable.ic_pending_tasks);
-                    taskViewModel.switchToCompletedTasks();
+                    taskViewModel.getAllCompletedTasks();
                     showingCompletedTasks = true;
                 } else {
                     item.setIcon(R.drawable.ic_done);
@@ -147,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (direction == ItemTouchHelper.LEFT) {
                     toDoListAdapter.notifyItemChanged(position);
-                    //Log.i("RESULT", "RECYCLER VIEW: " + toDoListAdapter.getTaskAt(position).getId());
                     startEditTaskActivity(toDoListAdapter.getTaskAt(position));
                 }
             }
@@ -175,8 +160,6 @@ public class MainActivity extends AppCompatActivity {
             public void OnItemClick(int position) {
                 TaskInfoDialog dialog = TaskInfoDialog.newInstance(toDoListAdapter.getTaskAt(position));
                 dialog.show(getSupportFragmentManager(), "Task Info Dialog");
-
-                sendNotification(toDoListAdapter.getTaskAt(position));
             }
 
             @Override
@@ -193,29 +176,11 @@ public class MainActivity extends AppCompatActivity {
                 toDoListAdapter.notifyItemChanged(position);
             }
         });
-
-        //toDoListAdapter.notifyDataSetChanged();
     }
 
-    public void sendNotification(ToDoTask task) {
-        Intent openMainActivity = new Intent(this, MainActivity.class);
-        PendingIntent notificationIntent = PendingIntent.getActivity(this, 0, openMainActivity, 0);
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
-                .setSmallIcon(R.drawable.ic_done)
-                .setContentTitle(task.getTitle())
-                .setContentText("Due today")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setCategory(NotificationCompat.CATEGORY_REMINDER)
-                .setContentIntent(notificationIntent)
-                .setAutoCancel(true)
-                .build();
-
-        notificationManager.notify(task.getId(), notification);
-    }
     public void addTask(ToDoTask task) {
         try {
             taskViewModel.insert(task);
-            Toast.makeText(getApplicationContext(), "Added new task", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
@@ -234,7 +199,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             notificationHandler.cancelScheduledNotification(task);
             taskViewModel.delete(task);
-            Toast.makeText(getApplicationContext(), "Deleted task", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }

@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHandler  {
@@ -15,7 +14,7 @@ public class DatabaseHandler  {
     public DatabaseHandler(Application app) {
         ToDoTaskDatabase db = ToDoTaskDatabase.getInstance(app);
         taskDao = db.taskDao();
-        allTasks = taskDao.getAllTasks();
+        //allTasks = taskDao.getAllTasks();
     }
 
     public void insert(ToDoTask task) {
@@ -31,7 +30,7 @@ public class DatabaseHandler  {
     }
 
     // used by main activity to display either pending or completed tasks
-   /* public LiveData<List<ToDoTask>> getAllTasks(boolean showCompletedTasks) {
+   public LiveData<List<ToDoTask>> getAllTasks(boolean showCompletedTasks) {
         LiveData<List<ToDoTask>> tasksList;
         if (showCompletedTasks)
              tasksList = taskDao.getAllCompletedTasks();
@@ -39,30 +38,22 @@ public class DatabaseHandler  {
             tasksList = taskDao.getAllUncompletedTasks();
 
         return tasksList;
-    }*/
+    }
 
     public LiveData<List<ToDoTask>> getAllTasks() {
-        LiveData<List<ToDoTask>> tasksList = taskDao.getAllTasks();
-
-        return tasksList;
+        return taskDao.getAllTasks();
     }
 
     public LiveData<List<ToDoTask>> getAllCompletedTasks() {
-        LiveData<List<ToDoTask>> tasksList = taskDao.getAllCompletedTasks();
-
-        return tasksList;
+        return taskDao.getAllCompletedTasks();
     }
 
     public LiveData<List<ToDoTask>> getAllUncompletedTasks() {
-        LiveData<List<ToDoTask>> tasksList = taskDao.getAllUncompletedTasks();
-
-        return tasksList;
+        return taskDao.getAllUncompletedTasks();
     }
 
     public ToDoTask getTaskById(int id_num) {
-        ToDoTask task = taskDao.getTaskById(id_num);
-
-        return task;
+        return taskDao.getTaskById(id_num);
     }
 
     private static class InsertToDoTaskAsyncTask extends AsyncTask<ToDoTask, Void, Void> {
@@ -106,5 +97,4 @@ public class DatabaseHandler  {
             return null;
         }
     }
-
 }

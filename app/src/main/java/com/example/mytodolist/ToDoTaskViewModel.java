@@ -9,25 +9,23 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
-
-//public class ToDoTaskViewModel {
     public class ToDoTaskViewModel extends AndroidViewModel {
-        private DatabaseHandler repository;
-        private LiveData<List<ToDoTask>> allTasks;
+        private DatabaseHandler databaseHandler;
+        public LiveData<List<ToDoTask>> allTasks;
 
         public ToDoTaskViewModel(@NonNull Application application) {
             super(application);
-            repository = new DatabaseHandler(application);
-            allTasks = repository.getAllUncompletedTasks();
+            databaseHandler = new DatabaseHandler(application);
+            allTasks = databaseHandler.getAllUncompletedTasks();
         }
         public void insert(ToDoTask task) {
-            repository.insert(task);
+            databaseHandler.insert(task);
         }
         public void update(ToDoTask task) {
-            repository.update(task);
+            databaseHandler.update(task);
         }
         public void delete(ToDoTask task) {
-            repository.delete(task);
+            databaseHandler.delete(task);
         }
 
         public LiveData<List<ToDoTask>> getAllTasks() {
@@ -35,21 +33,26 @@ import java.util.List;
         }
 
         public LiveData<List<ToDoTask>> getAllCompletedTasks() {
-            allTasks = repository.getAllCompletedTasks();
+            this.allTasks = databaseHandler.getAllCompletedTasks();
             return allTasks;
         }
 
         public void switchToCompletedTasks() {
-            allTasks = repository.getAllCompletedTasks();
+            /*List<ToDoTask> myButt = allTasks.getValue();
+            allTasks = databaseHandler.getAllCompletedTasks();
+            //List<ToDoTask> switchedTasks = databaseHandler.getAllCompletedTasks().getValue();
+            //allTasks.getValue().clear();
+            //allTasks.getValue().addAll(switchedTasks);
+            List<ToDoTask> myAss = allTasks.getValue();*/
+
         }
 
         public LiveData<List<ToDoTask>> getAllUncompletedTasks() {
-            allTasks = repository.getAllUncompletedTasks();
+            this.allTasks = databaseHandler.getAllUncompletedTasks();
             return allTasks;
         }
 
         public ToDoTask getTaskById(int id_num) {
-            return repository.getTaskById(id_num);
+            return databaseHandler.getTaskById(id_num);
         }
     }
-//}

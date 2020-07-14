@@ -65,20 +65,23 @@ public class NotificationHandler extends ContextWrapper {
         // each pending intent has the task id as its req code to uniquely identify them
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), task.getId(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis() + 10000, pendingIntent);
+        if (alarmManager != null)
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis() + 10000, pendingIntent);
     }
 
     public void cancelScheduledNotification (ToDoTask task) {
         // recreating the scheduled intent to cancel it
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent (getApplicationContext() , AlertReceiver.class);
+        Intent intent = new Intent(getApplicationContext(), AlertReceiver.class);
         Bundle bundle = new Bundle();
         bundle.putInt("task_id", task.getId());
         bundle.putString("task_name", task.getTitle());
         intent.putExtra("notification", bundle);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), task.getId(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        alarmManager.cancel(pendingIntent);
-        pendingIntent.cancel();
+        if (alarmManager != null) {
+            alarmManager.cancel(pendingIntent);
+            pendingIntent.cancel();
+        }
     }
 }

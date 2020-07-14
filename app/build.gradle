@@ -45,6 +45,10 @@ dependencies {
 
     implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'
 
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
+
+
+
 
     /*implementation ('android.arch.lifecycle:extensions') {
         version {

@@ -21,7 +21,6 @@ public interface ToDoTaskDao  {
     @Delete
     void delete(ToDoTask task);
 
-    // TODO implement conversion in MainActivity to ArrayList from List since Room doesn't support ArrayList
     @Query("SELECT * FROM to_do_tasks")
     LiveData<List<ToDoTask>> getAllTasks();
 
