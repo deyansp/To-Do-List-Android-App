@@ -44,20 +44,4 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
     implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'
-
-    debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
-
-
-
-
-    /*implementation ('android.arch.lifecycle:extensions') {
-        version {
-            strictly '1.1.1'
-        }
-    }
-    annotationProcessor ('android.arch.lifecycle:compiler') {
-        version {
-            strictly '1.1.1'
-        }
-    }*/
 }

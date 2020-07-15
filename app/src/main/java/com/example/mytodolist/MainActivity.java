@@ -167,10 +167,10 @@ public class MainActivity extends AppCompatActivity {
                 if (markAsDone) {
                     notificationHandler.cancelScheduledNotification(toDoListAdapter.getTaskAt(position));
                     toDoListAdapter.getTaskAt(position).setIsDone(true);
-                    Toast.makeText(getApplicationContext(), "Marked DONE", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Marked as Done", Toast.LENGTH_SHORT).show();
                 } else {
                     toDoListAdapter.getTaskAt(position).setIsDone(false);
-                    Toast.makeText(getApplicationContext(), "Marked NOT DONE", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Marked as Not Done", Toast.LENGTH_SHORT).show();
                 }
                 updateTask(toDoListAdapter.getTaskAt(position));
                 toDoListAdapter.notifyItemChanged(position);
@@ -189,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
     public void updateTask(ToDoTask task) {
         try {
             taskViewModel.update(task);
-            Toast.makeText(getApplicationContext(), "Updated task", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
@@ -228,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
                 ToDoTask newTask = data.getParcelableExtra("Edit Task");
                 updateTask(newTask);
             } else {
-                Toast.makeText(getApplicationContext(), "Activity task cancelled", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Task not saved", Toast.LENGTH_SHORT).show();
             }
     }
 
