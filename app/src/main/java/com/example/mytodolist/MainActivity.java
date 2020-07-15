@@ -1,7 +1,5 @@
 package com.example.mytodolist;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -15,8 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -60,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        // saving the array of ToDoTask objects
+        // saving the boolean which indicates which tasks to show
         outState.putBoolean("Tasks Displayed", showingCompletedTasks);
     }
 
@@ -74,13 +70,14 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    //@Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.addTask:
                 startAddTaskActivity();
                 return true;
             case R.id.viewDoneTasks:
+                Toast.makeText(getApplicationContext(), "UI updates on screen rotation (issue to fix)", Toast.LENGTH_SHORT).show();
                 if (!showingCompletedTasks) {
                     item.setIcon(R.drawable.ic_pending_tasks);
                     taskViewModel.getAllCompletedTasks();
@@ -136,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                     startEditTaskActivity(toDoListAdapter.getTaskAt(position));
                 }
             }
-
+            // code for displaying the relevant background colour, icon, and labels during swiping
             @Override
             public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
