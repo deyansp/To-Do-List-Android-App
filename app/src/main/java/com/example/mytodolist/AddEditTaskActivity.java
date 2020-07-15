@@ -5,10 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
-import android.app.AlarmManager;
 import android.app.DatePickerDialog;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -18,7 +15,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.Objects;
 
 public class AddEditTaskActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private TextInputLayout textInputTaskName;
@@ -26,10 +22,14 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
     private TextInputLayout textInputTaskDetails;
 
     // stores the user's selected due date
-    Calendar c;
-
-    Intent parentIntent;
-    int taskID;
+    private Calendar calendar;
+    // used for checking and storing intent extras
+    private Intent parentIntent;
+    private ToDoTask editTask;
+    // stores the new task details
+    private String title;
+    private String details;
+    private String date;
 
     // used for scheduling reminder notification on the selected date
     NotificationHandler notificationHandler;
@@ -50,15 +50,12 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         // and adjusting the UI accordingly
         if (parentIntent.hasExtra("Edit Task")) {
             myToolbar.setTitle("Edit Task");
-            ToDoTask editTask = parentIntent.getParcelableExtra("Edit Task");
-
-            // getting the id so that Room can use it to update the db
-            taskID = editTask.getId();
+            editTask = parentIntent.getParcelableExtra("Edit Task");
             // setting the existing details to the input fields
             textInputTaskName.getEditText().setText(editTask.getTitle());
 
             if (editTask.getDeadline() != null)
-        textInputTaskDate.getEditText().setText(editTask.getDeadline());
+                textInputTaskDate.getEditText().setText(editTask.getDeadline());
 
         if (editTask.getDetails() != null)
             textInputTaskDetails.getEditText().setText(editTask.getDetails());
@@ -83,17 +80,17 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
         // storing date into Calendar variable
-        c = Calendar.getInstance();
-        c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, month);
-        c.set(Calendar.DAY_OF_MONTH, day);
+        calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
         // formatting the selected date and updating the input field
-        String selectedDate = DateFormat.getDateInstance(DateFormat.FULL).format(c.getTime());
-        Objects.requireNonNull(textInputTaskDate.getEditText()).setText(selectedDate);
+        String selectedDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
+        textInputTaskDate.getEditText().setText(selectedDate);
     }
 
     private boolean validateTitle() {
-        String title = Objects.requireNonNull(textInputTaskName.getEditText()).getText().toString().trim();
+        title = textInputTaskName.getEditText().getText().toString().trim();
         if (title.isEmpty()) {
             textInputTaskName.setError("Field can't be empty");
             return false;
@@ -108,7 +105,8 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
     }
 
     private boolean validateDetails() {
-        String details = Objects.requireNonNull(textInputTaskDetails.getEditText()).getText().toString().trim();
+        details = textInputTaskDetails.getEditText().getText().toString().trim();
+
         if (details.length() > 600) {
             textInputTaskDetails.setError("Text too long");
             return false;
@@ -125,25 +123,27 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         if (!validateTitle() | !validateDetails()) {
             return;
         }
-
-        // storing the input in a new ToDoTask object TODO implement checks on fields instead of NONNULL
-        String title = Objects.requireNonNull(textInputTaskName.getEditText()).getText().toString().trim();
+        // storing the input in a new ToDoTask object
         ToDoTask newTask = new ToDoTask(title);
 
-        String details = Objects.requireNonNull(textInputTaskDetails.getEditText()).getText().toString().trim();
         if (!details.isEmpty()) {
             newTask.setDetails(details);
         }
 
-        String date = Objects.requireNonNull(textInputTaskDate.getEditText()).getText().toString().trim();
+        // date range is limited by the DatePickerFragment so no validation is necessary
+        date = textInputTaskDate.getEditText().getText().toString().trim();
+
         if (!date.isEmpty()) {
             newTask.setDeadline(date);
-            notificationHandler.scheduleNotification(c, newTask);
+            // scheduling reminder if an existing task's date was changed or if we're adding a new task
+            if (editTask == null || !newTask.getDeadline().equals(editTask.getDeadline()))
+                notificationHandler.scheduleNotification(calendar, newTask);
         }
 
+        // returning result back to main activity
         if (parentIntent.hasExtra("Edit Task")) {
             // returning task id to update the correct task
-            newTask.setId(taskID);
+            newTask.setId(editTask.getId());
             Intent intentResult = new Intent();
             intentResult.putExtra("Edit Task", newTask);
             setResult(RESULT_OK, intentResult);
@@ -156,7 +156,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
         finish();
     }
 
-    // when the cancel button is clicked
+    // when the cancel or back buttons are clicked
     public void cancelActivity(View view) {
         Intent intentResult = new Intent();
         setResult(RESULT_CANCELED, intentResult);
