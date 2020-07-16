@@ -1,9 +1,6 @@
 package com.example.mytodolist;
 
-import android.annotation.TargetApi;
 import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -11,15 +8,14 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-
 import androidx.core.app.NotificationCompat;
-
 import java.util.Calendar;
 
+// notification channel ID so that notifications can be sent on APIs 26+
 import static com.example.mytodolist.AppNotificationChannel.CHANNEL_1_ID;
 
 public class NotificationHandler extends ContextWrapper {
-
+    // android class for creating and sending notifications
     private NotificationManager mManager;
 
     public NotificationHandler(Context base) {
@@ -36,7 +32,9 @@ public class NotificationHandler extends ContextWrapper {
         return mManager;
     }
 
+    // used by the AlertReceiver to create the notification
     public NotificationCompat.Builder getNotification(String taskName) {
+
         // intent for opening the app on notification click
         Intent openMainActivity = new Intent(getApplicationContext(), MainActivity.class);
         PendingIntent notificationIntent = PendingIntent.getActivity(getApplicationContext(), 0, openMainActivity, 0);
@@ -51,6 +49,7 @@ public class NotificationHandler extends ContextWrapper {
                 .setAutoCancel(true);
     }
 
+    // two methods used by the activities to schedule and cancel reminders
     public void scheduleNotification(Calendar c, ToDoTask task) {
         // alarm service used to schedule a notification
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);

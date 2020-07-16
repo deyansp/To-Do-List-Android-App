@@ -1,15 +1,11 @@
 package com.example.mytodolist;
 
 import android.app.Application;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.os.Build;
 
-import androidx.core.app.NotificationCompat;
-
+// class that is called at the begging of the app, to create the notification channel
 public class AppNotificationChannel extends Application {
     public static final String CHANNEL_1_ID = "Task Reminder Channel";
 

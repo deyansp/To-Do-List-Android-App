@@ -4,15 +4,12 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
-
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.DatePicker;
-
 import com.google.android.material.textfield.TextInputLayout;
-
 import java.text.DateFormat;
 import java.util.Calendar;
 
@@ -57,10 +54,9 @@ public class AddEditTaskActivity extends AppCompatActivity implements DatePicker
             if (editTask.getDeadline() != null)
                 textInputTaskDate.getEditText().setText(editTask.getDeadline());
 
-        if (editTask.getDetails() != null)
-            textInputTaskDetails.getEditText().setText(editTask.getDetails());
-        }
-        else
+            if (editTask.getDetails() != null)
+                textInputTaskDetails.getEditText().setText(editTask.getDetails());
+        } else
             myToolbar.setTitle("Add New Task");
 
         setSupportActionBar(myToolbar);

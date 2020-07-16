@@ -3,14 +3,12 @@ package com.example.mytodolist;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.widget.DatePicker;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-
 import java.util.Calendar;
 
+// creates the window for date selection in AddEditTaskActivity
 public class DatePickerFragment extends DialogFragment  {
 
     @NonNull
@@ -28,18 +26,4 @@ public class DatePickerFragment extends DialogFragment  {
 
         return datePickerDialog;
     }
-
-  /*  @Override
-    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, month);
-        c.set(Calendar.DAY_OF_MONTH, day);
-
-        returnDateToActivity(c);
-    }
-
-    public Calendar returnDateToActivity(Calendar c) {
-        return c;
-    }*/
 }

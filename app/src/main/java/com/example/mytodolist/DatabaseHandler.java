@@ -2,19 +2,19 @@ package com.example.mytodolist;
 
 import android.app.Application;
 import android.os.AsyncTask;
-
 import androidx.lifecycle.LiveData;
-
 import java.util.List;
 
+// abstraction class for db actions, can be extended in the future to use Firebase
+// and alternate between local and cloud storage methods
 public class DatabaseHandler  {
+
+    // database access object for db queries
     private ToDoTaskDao taskDao;
-    private LiveData<List<ToDoTask>> allTasks;
 
     public DatabaseHandler(Application app) {
         ToDoTaskDatabase db = ToDoTaskDatabase.getInstance(app);
         taskDao = db.taskDao();
-        //allTasks = taskDao.getAllTasks();
     }
 
     public void insert(ToDoTask task) {
@@ -29,33 +29,19 @@ public class DatabaseHandler  {
         new DeleteToDoTaskAsyncTask(taskDao).execute(task);
     }
 
-    // used by main activity to display either pending or completed tasks
-   public LiveData<List<ToDoTask>> getAllTasks(boolean showCompletedTasks) {
-        LiveData<List<ToDoTask>> tasksList;
-        if (showCompletedTasks)
-             tasksList = taskDao.getAllCompletedTasks();
-        else
-            tasksList = taskDao.getAllUncompletedTasks();
 
-        return tasksList;
-    }
-
+    // Room executes methods that return LiveData outside the UI thread by default
+    // so no AsyncTasks are needed
     public LiveData<List<ToDoTask>> getAllTasks() {
         return taskDao.getAllTasks();
     }
 
-    public LiveData<List<ToDoTask>> getAllCompletedTasks() {
-        return taskDao.getAllCompletedTasks();
-    }
+    public LiveData<List<ToDoTask>> getAllCompletedTasks() { return taskDao.getAllCompletedTasks(); }
 
-    public LiveData<List<ToDoTask>> getAllUncompletedTasks() {
-        return taskDao.getAllUncompletedTasks();
-    }
+    public LiveData<List<ToDoTask>> getAllUncompletedTasks() { return taskDao.getAllUncompletedTasks(); }
 
-    public ToDoTask getTaskById(int id_num) {
-        return taskDao.getTaskById(id_num);
-    }
-
+    // AsyncTasks to prevent the UI thread from freezing, try/catch code in MainActivity to enable messages to the user
+    // The class needs to specify <parameters, progress, return type>
     private static class InsertToDoTaskAsyncTask extends AsyncTask<ToDoTask, Void, Void> {
         private ToDoTaskDao taskDao;
 

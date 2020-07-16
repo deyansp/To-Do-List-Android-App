@@ -6,10 +6,9 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
-
 import java.util.List;
 
-// interface through which the Room library will generate the necessary db code
+// interface through which the Room library will generate the necessary db query code
 @Dao
 public interface ToDoTaskDao  {
     @Insert

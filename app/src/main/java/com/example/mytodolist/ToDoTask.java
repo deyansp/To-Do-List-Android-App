@@ -2,14 +2,16 @@ package com.example.mytodolist;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import java.util.Calendar;
+// class that holds the task details and is used by Room for the db table and queries
+// implements Parcelable for easy passage of data between activities
+
 @Entity(tableName = "to_do_tasks")
 public class ToDoTask implements Parcelable {
+
     @PrimaryKey(autoGenerate = true)
     private int id;
 
@@ -35,16 +37,18 @@ public class ToDoTask implements Parcelable {
         this.deadline = date;
         this.isDone = false;
     }
+
+    // Parcelable method
     @Ignore
     protected ToDoTask(Parcel in) {
         id = in.readInt();
         title = in.readString();
         details = in.readString();
         isDone = in.readByte() != 0;
-        //isDone = in.readString();
         deadline = in.readString();
     }
 
+    // Parcelable method
     public static final Creator<ToDoTask> CREATOR = new Creator<ToDoTask>() {
         @Override
         public ToDoTask createFromParcel(Parcel in) {
@@ -93,6 +97,7 @@ public class ToDoTask implements Parcelable {
         this.deadline = deadline;
     }
 
+    // Parcelable methods
     @Override
     public int describeContents() {
         return 0;
@@ -104,7 +109,6 @@ public class ToDoTask implements Parcelable {
         parcel.writeString(title);
         parcel.writeString(details);
         parcel.writeByte((byte) (isDone ? 1 : 0));
-        //parcel.writeString(isDone);
         parcel.writeString(deadline);
     }
 }

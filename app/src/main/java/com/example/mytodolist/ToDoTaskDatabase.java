@@ -2,14 +2,11 @@ package com.example.mytodolist;
 
 import android.content.Context;
 import android.os.AsyncTask;
-
 import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
-
-import static androidx.room.Room.*;
 
 @Database(entities = {ToDoTask.class}, version = 1, exportSchema = false)
 public abstract class ToDoTaskDatabase extends RoomDatabase {
@@ -18,6 +15,7 @@ public abstract class ToDoTaskDatabase extends RoomDatabase {
 
     public abstract ToDoTaskDao taskDao();
 
+    // synchronized to prevent db race conditions between AsyncTasks
     public static synchronized ToDoTaskDatabase getInstance(Context context) {
         // create db if it doesn't exist
         if (instance == null) {
