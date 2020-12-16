@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         else
             showingCompletedTasks = false;
 
-        // creates the RecyclerView and sets the listeners
+        // creates the RecyclerView and handles its listeners
         initRecyclerView();
     }
 
